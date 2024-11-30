@@ -1,0 +1,3 @@
+[submodule "libs/QDmxLib"]
+	path = libs/QDmxLib
+	url = https://github.com/NicoG60/QDmxLib
