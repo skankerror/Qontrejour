@@ -1,0 +1,24 @@
+- voir à mettre des Shared Data ? Mutex ?
+
+- gérer le master
+- les indépendants
+- mettre ts les sliders en 255 et gérer l'affichage %
+
+- midi
+- osc
+
+
+- revoir le schéma des connect
+connections :
+engine : group (setlevel)-> groupengine
+         groupengine -> channelengine (puis envoie channel->setlevel)
+         channel (setlevel)-> outputengine (puis envoie output->setlevel)
+
+manager : output (setlevel)-> manager -> hwmanager
+
+
+widget connections :
+
+valuesliderswidget : manager (connectvaluetowidget)-> this (connectslider)
+valueslider : this (valuechanged)-> this updateLevel -> value->setlevel
+              value (levelChanged)-> this onvaluelevelchanged. update le slider.

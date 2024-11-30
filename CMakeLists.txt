@@ -16,12 +16,40 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 
 set(TS_FILES Qontrejour_fr_GF.ts)
 
+set(RES_FILES resources/resources.qrc)
+
+set(DATA_FILES README.md TODO LICENSE)
+
 set(PROJECT_SOURCES
-        src/main.cpp
-        src/qontrejour.h
-        src/gui/mainwindow.cpp
-        src/gui/mainwindow.h
-        ${TS_FILES}
+  src/main.cpp
+  src/qontrejour.h
+  src/core/dmxvalue.h
+  src/core/dmxvalue.cpp
+  src/core/dmxmanager.h
+  src/core/dmxmanager.cpp
+  src/core/dmxengine.h
+  src/core/dmxengine.cpp
+  src/core/channeldataengine.h
+  src/core/channeldataengine.cpp
+  src/core/interpreter.h
+  src/core/interpreter.cpp
+  src/gui/mainwindow.h
+  src/gui/mainwindow.cpp
+  src/gui/universewidget.h
+  src/gui/universewidget.cpp
+  src/gui/sequencerwidget.h
+  src/gui/sequencerwidget.cpp
+  src/gui/valuetablewidget.h
+  src/gui/valuetablewidget.cpp
+  src/gui/valuesliderswidget.h
+  src/gui/valuesliderswidget.cpp
+  #        src/gui/valueeditwidget.h
+  #        src/gui/valueeditwidget.cpp
+  src/gui/keypadwidget.h
+  src/gui/keypadwidget.cpp
+  ${TS_FILES}
+  ${RES_FILES}
+  ${DATA_FILES}
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -52,6 +80,8 @@ else()
 endif()
 
 target_link_libraries(Qontrejour PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(Qontrejour PUBLIC QDmxLib)
+
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
