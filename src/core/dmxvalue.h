@@ -1,5 +1,5 @@
 /*
- * (c) 2023 Michaël Creusy -- creusy(.)michael(@)gmail(.)com
+ * (c) 2024 Michaël Creusy -- creusy(.)michael(@)gmail(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,21 +147,22 @@ public slots :
   virtual void setLevel(dmx t_level)
   { m_level = t_level;
     emit levelChanged(m_id,
-                      m_level); }
+                      m_level);
+  }
 
   void setParentValue(RootValue *t_parentValue)
   { m_parentValue = t_parentValue; }
   void setAssignedWidget(QWidget *t_assignedWidget)
   { m_assignedWidget = t_assignedWidget; }
 
-protected:
+// protected:
 
-  Q_PROPERTY(dmx level
-                 READ getLevel
-                     WRITE setLevel
-                         RESET resetLevel
-                             NOTIFY levelChanged
-                                 FINAL)
+//   Q_PROPERTY(dmx level
+//                  READ getLevel
+//                      WRITE setLevel
+//                          RESET resetLevel
+//                              NOTIFY levelChanged
+//                                  FINAL)
 
 protected :
 
@@ -235,9 +236,19 @@ class DmxChannel
 public :
 
   DmxChannel(ValueType t_type = ChannelType,
+             dmx t_channelGroupLevel = NULL_DMX,
+             dmx t_directChannelLevel = NULL_DMX,
+             overdmx t_directChannelOffset = NULL_DMX_OFFSET,
+             dmx t_sceneLevel = NULL_DMX,
+             dmx t_nextSceneLevel = NULL_DMX,
              RootValue *t_parent = nullptr)
       : LeveledValue(t_type,
-                     t_parent)
+                     t_parent),
+        m_channelGroupLevel(t_channelGroupLevel),
+        m_directChannelLevel(t_directChannelLevel),
+        m_directChannelOffset(t_directChannelOffset),
+        m_sceneLevel(t_sceneLevel),
+        m_nextSceneLevel(t_nextSceneLevel)
   { setName(DEFAULT_CHANNEL_NAME); }
 
 
@@ -251,11 +262,51 @@ public :
   ChannelDataFlag getChannelDataFlag() const
   { return m_channelDataFlag; }
 
+  dmx getChannelGroupLevel() const{ return m_channelGroupLevel; }
+  dmx getDirectChannelLevel() const{ return m_directChannelLevel; }
+  overdmx getDirectChannelOffset() const{ return m_directChannelOffset; }
+  dmx getSceneLevel() const{ return m_sceneLevel; }
+  dmx getNextSceneLevel() const{ return m_nextSceneLevel; }
+  bool getIsSelected() const{ return m_isSelected; }
+  bool getIsDirectChannel() const{ return m_isDirectChannel; }
+
   // setters
   void setL_controledOutput(const QList<DmxOutput *> &t_L_controledOutput)
   { m_L_controledOutput = t_L_controledOutput; }
   void setChannelDataFlag(ChannelDataFlag t_channelDataFlag)
   { m_channelDataFlag = t_channelDataFlag; }
+  void setChannelGroupLevel(dmx t_channelGroupLevel)
+  { m_channelGroupLevel = t_channelGroupLevel; }
+  void setDirectChannelLevel(dmx t_directChannelLevel)
+  { m_directChannelLevel = t_directChannelLevel; }
+  void setDirectChannelOffset(overdmx t_directChannelOffset)
+  { m_directChannelOffset = t_directChannelOffset; }
+  void setSceneLevel(dmx t_sceneLevel){ m_sceneLevel = t_sceneLevel; update(); }
+  void setNextSceneLevel(dmx t_nextSceneLevel)
+  { m_nextSceneLevel = t_nextSceneLevel; }
+  void setIsSelected(bool t_isSelected)
+  { m_isSelected = t_isSelected;
+    if (!t_isSelected) clearOverdmx(); }
+  void setIsDirectChannel(bool t_isDirectChannel)
+  { m_isDirectChannel = t_isDirectChannel; }
+
+  void clearChannel()
+  {
+    m_directChannelLevel = NULL_DMX;
+    m_directChannelOffset = NULL_DMX_OFFSET;
+    m_sceneLevel = NULL_DMX;
+    m_nextSceneLevel = NULL_DMX;
+    // TODO : gerer le flag
+  }
+  void clearDirectChannel()
+  {
+    m_directChannelLevel = NULL_DMX;
+    m_directChannelOffset = NULL_DMX_OFFSET;
+    m_isDirectChannel = false;
+    //    m_sceneLevel = NULL_DMX;
+  }
+
+  void clearOverdmx(){ m_directChannelOffset = NULL_DMX_OFFSET; }
 
   void addOutput(DmxOutput *t_dmxOutput);
   void addOutput(Uid_Id t_Uid_Id);
@@ -266,10 +317,28 @@ public :
   void removeOutputList(const QList<Uid_Id> t_L_Uid_Id);
   void clearControledOutput();
 
+  void update();
+
 private :
 
   QList<DmxOutput *>m_L_controledOutput;
   ChannelDataFlag m_channelDataFlag = ChannelDataFlag::UnknownFlag;
+
+  // from channeldata
+  dmx m_channelGroupLevel = NULL_DMX;
+  dmx m_directChannelLevel = NULL_DMX;
+  overdmx m_directChannelOffset = NULL_DMX_OFFSET;
+  dmx m_sceneLevel = NULL_DMX;
+  dmx m_nextSceneLevel = NULL_DMX;
+  bool m_isSelected = false;
+  bool m_isDirectChannel = false;
+
+  Q_PROPERTY(dmx sceneLevel
+                 READ getSceneLevel
+                     WRITE setSceneLevel
+/*                         RESET resetLevel
+                             NOTIFY levelChanged
+                                 FINAL*/)
 
 };
 Q_DECLARE_METATYPE(DmxChannel)

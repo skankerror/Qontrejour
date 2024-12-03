@@ -1,5 +1,5 @@
 /*
- * (c) 2023 Michaël Creusy -- creusy(.)michael(@)gmail(.)com
+ * (c) 2024 Michaël Creusy -- creusy(.)michael(@)gmail(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -218,6 +218,36 @@ void DmxChannel::clearControledOutput()
 {
   m_L_controledOutput.clear();
   m_L_controledOutput.squeeze();
+}
+
+void DmxChannel::update()
+{
+  setChannelDataFlag(ChannelDataFlag::UnknownFlag);
+  if (m_channelGroupLevel >= m_directChannelLevel)
+  {
+    m_level = m_channelGroupLevel;
+    if (m_level)
+      setChannelDataFlag(ChannelDataFlag::ChannelGroupFlag);
+    if (m_isDirectChannel) return;// on s'en fout de scene level
+    if (m_sceneLevel >= m_level)
+    {
+      m_level = m_sceneLevel;
+      if (m_level)
+        setChannelDataFlag(ChannelDataFlag::SelectedSceneFlag);
+    }
+  }
+  else
+  {
+    m_level = m_directChannelLevel;
+    setChannelDataFlag(ChannelDataFlag::DirectChannelFlag);
+    if (m_isDirectChannel) return;// on s'en fout de scene level
+    if (m_sceneLevel >= m_level)
+    {
+      m_level = m_sceneLevel;
+      setChannelDataFlag(ChannelDataFlag::SelectedSceneFlag);
+    }
+  }
+  // TODO : développer, gérer l'offset,etc...
 }
 
 /********************************** DMXCHANNELGROUP ************************************/
