@@ -1,5 +1,5 @@
 /*
- * (c) 2023 Michaël Creusy -- creusy(.)michael(@)gmail(.)com
+ * (c) 2024 Michaël Creusy -- creusy(.)michael(@)gmail(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <QEasingCurve>
 #include "../qontrejour.h"
 #include "dmxvalue.h"
-// #include "channeldataengine.h"
 
 /****************************** ChannelGroupEngine ***********************/
 
@@ -106,7 +105,6 @@ public :
 private :
 
   RootValue *m_rootValue;
-  // ChannelDataEngine *m_channelDataEngine;
   ChannelEngine *m_channelEngine;
   QList<Sequence *> m_L_seq;
 
@@ -124,7 +122,6 @@ class CueEngine :
 public :
 
   explicit CueEngine(RootValue *t_rootValue,
-                     // ChannelDataEngine *t_channelDataEngine,
                      ChannelEngine *t_channelEngine,
                      QList<Sequence *> t_L_seq,
                      QObject *parent = nullptr);
@@ -194,7 +191,6 @@ private slots :
 
 private :
 
-  // ChannelDataEngine *m_channelDataEngine;
   ChannelEngine *m_engine;
 
   GoEngine *m_goEngine;
@@ -222,7 +218,6 @@ class ChannelEngine
 public :
 
   explicit ChannelEngine(RootValue *t_rootChannel,
-                         // ChannelDataEngine *t_channelDataEngine,
                          QObject *parent = nullptr);
 
   ~ChannelEngine();
@@ -253,9 +248,6 @@ public :
   void removeL_idFromL_select(const QList<id> &t_L_id);
   void removeIdFromL_select(const id &t_id);
 
-  // qsizetype getChannelCount()
-  // { return m_L_channelData.size(); }
-
   void selectNonNullChannels();
   void clearDirectChannel();
 
@@ -281,13 +273,10 @@ public slots :
 
   void clearSelection();
 
-  // void clearChannelDataSelection();
-
 private :
 
   RootValue *m_rootChannel;
 
-  // QList<ChannelData *> m_L_channelData;
   QList<id> m_L_directChannelId;
   QList<id> m_L_selectedChannelId;
 
@@ -353,11 +342,6 @@ public :
 
   void setMainSeq(id t_id);
 
-  // ChannelDataEngine *getChannelDataEngine() const
-  // { return m_channelDataEngine; }
-  // ChannelEngine *getChannelEngine() const
-  // { return m_channelEngine; }
-
 private :
 
   QList<DmxChannel *> getSelectedChannels()const;
@@ -399,8 +383,6 @@ private :
   CueEngine *m_cueEngine;
   ChannelEngine *m_channelEngine;
   OutputEngine *m_outputEngine;
-
-  // ChannelDataEngine *m_channelDataEngine;
 
   // members for interpreter
   QList<Uid_Id> m_L_outputUid_IdSelection;

@@ -9,11 +9,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# qt_standard_project_setup()
-
-# add_subdirectory(src)
-# add_subdirectory(src/gui)
-# add_subdirectory(src/core)
 add_subdirectory(libs/QDmxLib)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Network SerialPort)
@@ -33,8 +28,6 @@ set(PROJECT_SOURCES
   src/core/dmxmanager.cpp
   src/core/dmxengine.h
   src/core/dmxengine.cpp
-  # src/core/channeldataengine.h
-  # src/core/channeldataengine.cpp
   src/core/interpreter.h
   src/core/interpreter.cpp
   src/gui/mainwindow.h
@@ -77,6 +70,4 @@ install(TARGETS Qontrejour
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(Qontrejour)
-# endif()
+qt_finalize_executable(Qontrejour)
