@@ -33,8 +33,8 @@ set(PROJECT_SOURCES
   src/core/dmxmanager.cpp
   src/core/dmxengine.h
   src/core/dmxengine.cpp
-  src/core/channeldataengine.h
-  src/core/channeldataengine.cpp
+  # src/core/channeldataengine.h
+  # src/core/channeldataengine.cpp
   src/core/interpreter.h
   src/core/interpreter.cpp
   src/gui/mainwindow.h

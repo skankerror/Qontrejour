@@ -34,8 +34,8 @@ ValueTableWidget::ValueTableWidget(QWidget *parent)
     m_channelDelegate(new ChannelDelegate(this))
 {
   auto dmxEngine = MANAGER->getDmxEngine();
-  auto channelDataEngine = dmxEngine->getChannelDataEngine();
-  setChannelDataEngine(channelDataEngine);
+  auto channelEngine = dmxEngine->getChannelEngine();
+  setChannelEngine(channelEngine);
   setRootValue(MANAGER->getRootChannel());
 
   auto totalLayout = new QVBoxLayout();
@@ -56,8 +56,8 @@ ValueTableWidget::ValueTableWidget(QWidget *parent)
   m_tableView->resizeColumnsToContents();
   m_tableView->resizeRowsToContents();
 
-  connect(channelDataEngine,
-          &ChannelDataEngine::sigToUpdateChannelView,
+  connect(channelEngine,
+          &ChannelEngine::sigToUpdateChannelView,
           this,
           &ValueTableWidget::repaintTableView);
 }
@@ -79,10 +79,10 @@ void ValueTableWidget::setRootValue(RootValue *t_rootValue)
   }
 }
 
-void ValueTableWidget::setChannelDataEngine(ChannelDataEngine *t_cdEngine)
+void ValueTableWidget::setChannelEngine(ChannelEngine *t_cdEngine)
 {
-  m_channelDelegate->setChannelDataEngine(t_cdEngine);
-  m_tableView->setChannelDataEngine(t_cdEngine);
+  m_channelDelegate->setChannelEngine(t_cdEngine);
+  m_tableView->setChannelEngine(t_cdEngine);
 }
 
 void ValueTableWidget::repaintTableView()
@@ -117,11 +117,11 @@ void ValueTableView::mousePressEvent(QMouseEvent *event)
     }
     else
     {
-      auto channelData = m_channelDataEngine->getChannelData(valueID);
-      if (channelData->getIsSelected())
-        m_channelDataEngine->removeIdFromL_select(valueID);
+      auto channel = m_channelEngine->getChannel(valueID);
+      if (channel->getIsSelected())
+        m_channelEngine->removeIdFromL_select(valueID);
       else
-        m_channelDataEngine->addIdToL_select(valueID);
+        m_channelEngine->addIdToL_select(valueID);
       return;
     }
   }
@@ -178,14 +178,14 @@ void ChannelDelegate::paint(QPainter *painter,
   int valueID = ((index.row() * DMX_VALUE_TABLE_MODEL_COLUMNS_COUNT_DEFAULT)
                  + index.column());
   if (valueID < 0
-      || valueID >= m_channelDataEngine
-                        ->getChannelDataCount())
+      || valueID >= m_channelEngine
+                        ->getRootChannel()->getL_childValueSize())
   {
     qDebug() << "bluk !";
     return;
   }
-  auto channelData = m_channelDataEngine->getChannelData(valueID);
-  ChannelDataFlag flag = channelData->getFlag();
+  auto channel = m_channelEngine->getChannel(valueID);
+  ChannelDataFlag flag = channel->getChannelDataFlag();
   QColor dmxColor;
   switch(flag)
   {
@@ -210,7 +210,7 @@ void ChannelDelegate::paint(QPainter *painter,
   }
 
   QColor backGroundColor(Qt::black);
-  if (channelData->getIsSelected())
+  if (channel->getIsSelected())
     backGroundColor = DARK_ORANGE_COLOR;
 
   painter->save();
@@ -225,7 +225,7 @@ void ChannelDelegate::paint(QPainter *painter,
   QTextOption textOption;
   textOption.setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
   painter->drawText(option.rect,
-                    QString::number(channelData->getActual_Level()),
+                    QString::number(channel->getLevel()),
                     textOption);
   painter->restore();
 
@@ -235,7 +235,7 @@ void ChannelDelegate::paint(QPainter *painter,
   painter->setPen(idPen);
   textOption.setAlignment(Qt::AlignTop | Qt::AlignHCenter);
   painter->drawText(option.rect,
-                    QString::number(channelData->getChannelID() + 1),
+                    QString::number(channel->getid() + 1),
                     textOption);
   painter->restore();
 }

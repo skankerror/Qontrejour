@@ -21,59 +21,42 @@
 #include <QMainWindow>
 #include <QList>
 #include <QPushButton>
-#include <QBoxLayout>
-// #include <ossia-cpp/ossia-cpp98.hpp>
-// #include "dmxmanagerwidget.h"
-// #include "grandmasterwidget.h"
-// #include "playbackwidget.h"
-// #include "sequencerwidget.h"
-// #include "submasterwidget.h"
-// #include "directchannelwidget.h"
-// #include "dmxvaluetablewidget.h"
-// #include "../core/dmxscene.h"
+#include "universewidget.h"
+#include "sequencerwidget.h"
+#include "valuesliderswidget.h"
+#include "valuetablewidget.h"
 
 
 class MainWindow
     : public QMainWindow
 {
 
-    Q_OBJECT
+  Q_OBJECT
 
-public:
+public :
 
-    explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+  explicit MainWindow(QWidget *parent = nullptr);
 
-private:
+  ~MainWindow();
 
-    void createCentralWidget();
-    QWidget * createDmxManagerContainerWidget();
-    // SubmasterWidget * createSubmasterWidget();
-    void createDockWidgets();
+private :
 
-    void createConnections();
+  void createCentralWidget();
+  QWidget *createUniverseContainerWidget();
+  void createDockWidgets();
 
-signals:
+private slots :
 
-    void universeCountChanged(int);
+  void addUniverseWidget();
+  void removeUniverseWidget();
 
-private slots:
+private :
 
-    // void addDmxManagerWidget();
-    // void removeDmxManagerWidget();
-    // void setDirectChannelWidget(int t_universeID);
+  DirectChannelWidget *m_directChannelWidget;
+  QVBoxLayout *m_universeWidgetContainerLayout;
+  QList<UniverseWidget *> m_L_universeWidget;
 
-private:
-
-    // DirectChannelWidget *m_directChannelWidget;
-    QVBoxLayout *m_dmxManagerContainerLayout;
-    // QList<DmxManagerWidget *> m_L_dmxManagerWidget;
-
-    // DmxValueTableWidget *m_dmxChannelTableWidget;
-
-    // QDmxManager *m_dmxManager;
-
-    int m_universeCount;
+  ValueTableWidget *m_channelTableWidget;
 
 };
 #endif // MAINWINDOW_H

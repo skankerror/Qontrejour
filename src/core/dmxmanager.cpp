@@ -294,7 +294,7 @@ void DmxManager::connectInterpreterToEngine()
           m_dmxEngine, &DmxEngine::onSelectAll);
 
   connect(m_interpreter, &Interpreter::clearChannelSelection,
-          channelEngine, &ChannelEngine::clearChannelDataSelection);
+          channelEngine, &ChannelEngine::clearSelection);
 
   connect(m_interpreter, &Interpreter::clearOutputSelection,
           m_dmxEngine, &DmxEngine::onClearOutputSelection);

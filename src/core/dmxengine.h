@@ -23,7 +23,7 @@
 #include <QEasingCurve>
 #include "../qontrejour.h"
 #include "dmxvalue.h"
-#include "channeldataengine.h"
+// #include "channeldataengine.h"
 
 /****************************** ChannelGroupEngine ***********************/
 
@@ -79,6 +79,7 @@ private :
 };
 
 /******************************* GoEngine *****************************/
+class ChannelEngine;
 
 class GoEngine
     : public QParallelAnimationGroup
@@ -89,7 +90,8 @@ class GoEngine
 public :
 
   explicit GoEngine(RootValue *t_rootValue,
-                    ChannelDataEngine *t_channelDataEngine,
+                    // ChannelDataEngine *t_channelDataEngine,
+                    ChannelEngine *t_channelEngine,
                     QList<Sequence *> t_L_seq,
                     QObject *parent = nullptr);
 
@@ -104,12 +106,14 @@ public :
 private :
 
   RootValue *m_rootValue;
-  ChannelDataEngine *m_channelDataEngine;
+  // ChannelDataEngine *m_channelDataEngine;
+  ChannelEngine *m_channelEngine;
   QList<Sequence *> m_L_seq;
 
 };
 
 /******************************* CueEngine ****************************/
+// class ChannelEngine;
 
 class CueEngine :
     public QObject
@@ -120,7 +124,8 @@ class CueEngine :
 public :
 
   explicit CueEngine(RootValue *t_rootValue,
-                     ChannelDataEngine *t_channelDataEngine,
+                     // ChannelDataEngine *t_channelDataEngine,
+                     ChannelEngine *t_channelEngine,
                      QList<Sequence *> t_L_seq,
                      QObject *parent = nullptr);
 
@@ -189,7 +194,8 @@ private slots :
 
 private :
 
-  ChannelDataEngine *m_channelDataEngine;
+  // ChannelDataEngine *m_channelDataEngine;
+  ChannelEngine *m_engine;
 
   GoEngine *m_goEngine;
 
@@ -216,7 +222,7 @@ class ChannelEngine
 public :
 
   explicit ChannelEngine(RootValue *t_rootChannel,
-                         ChannelDataEngine *t_channelDataEngine,
+                         // ChannelDataEngine *t_channelDataEngine,
                          QObject *parent = nullptr);
 
   ~ChannelEngine();
@@ -225,12 +231,40 @@ public :
 
   void setRootChannel(RootValue *t_rootChannel)
   { m_rootChannel = t_rootChannel; }
-  void setChannelDataEngine(ChannelDataEngine *t_channelDataEngine)
-  { m_channelDataEngine = t_channelDataEngine; }
 
-private :
+  QList<id> getL_directChannelId() const
+  { return m_L_directChannelId; }
+
+  QList<id> getL_selectedChannelId() const
+  { return m_L_selectedChannelId; }
+  DmxChannel *getChannel(const id &t_id) const;
+
+// private :
+
+  QList<DmxChannel *> getL_directChannel();
+  void addL_idToL_direct(const QList<id> &t_L_id);
+  void addIdToL_direct(const id &t_id);
+  void removeL_idFromL_direct(const QList<id> &t_L_id);
+  void removeIdFromL_direct(const id &t_id);
+
+  QList<DmxChannel *> getL_selectedChannel();
+  void addL_idToL_select(const QList<id> &t_L_id);
+  void addIdToL_select(const id &t_id);
+  void removeL_idFromL_select(const QList<id> &t_L_id);
+  void removeIdFromL_select(const id &t_id);
+
+  // qsizetype getChannelCount()
+  // { return m_L_channelData.size(); }
+
+  void selectNonNullChannels();
+  void clearDirectChannel();
 
   void update(id t_id);
+
+signals :
+
+  void sigToUpdateChannelView();
+
 
 public slots :
 
@@ -245,13 +279,18 @@ public slots :
                                       dmx t_level,
                                       CueRole t_role = CueRole::NewSelectRole);
 
-  void clearChannelDataSelection();
+  void clearSelection();
+
+  // void clearChannelDataSelection();
 
 private :
 
   RootValue *m_rootChannel;
 
-  ChannelDataEngine *m_channelDataEngine;
+  // QList<ChannelData *> m_L_channelData;
+  QList<id> m_L_directChannelId;
+  QList<id> m_L_selectedChannelId;
+
 };
 
 /****************************** OutputEngine *****************************/
@@ -314,8 +353,10 @@ public :
 
   void setMainSeq(id t_id);
 
-  ChannelDataEngine *getChannelDataEngine() const
-  { return m_channelDataEngine; }
+  // ChannelDataEngine *getChannelDataEngine() const
+  // { return m_channelDataEngine; }
+  // ChannelEngine *getChannelEngine() const
+  // { return m_channelEngine; }
 
 private :
 
@@ -359,7 +400,7 @@ private :
   ChannelEngine *m_channelEngine;
   OutputEngine *m_outputEngine;
 
-  ChannelDataEngine *m_channelDataEngine;
+  // ChannelDataEngine *m_channelDataEngine;
 
   // members for interpreter
   QList<Uid_Id> m_L_outputUid_IdSelection;

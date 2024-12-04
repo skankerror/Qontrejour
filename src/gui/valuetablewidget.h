@@ -27,8 +27,8 @@
 #include <QStyledItemDelegate>
 #include <QEvent>
 #include "../core/dmxvalue.h"
-#include "../core/channeldataengine.h"
-
+// #include "../core/channeldataengine.h"
+#include "../core/dmxengine.h"
 
 class ValueTableView;
 class ValueTableModel;
@@ -52,7 +52,7 @@ private :
 
 public slots :
 
-  void setChannelDataEngine(ChannelDataEngine *t_cdEngine);
+  void setChannelEngine(ChannelEngine *t_cdEngine);
 
 protected slots :
 
@@ -80,8 +80,8 @@ public :
 
   virtual ~ValueTableView();
 
-  void setChannelDataEngine(ChannelDataEngine *t_channelDataEngine)
-  { m_channelDataEngine = t_channelDataEngine; }
+  void setChannelEngine(ChannelEngine *t_channelEngine)
+  { m_channelEngine = t_channelEngine; }
 
 protected :
 
@@ -102,7 +102,7 @@ signals :
 
 protected :
 
-  ChannelDataEngine *m_channelDataEngine;
+  ChannelEngine *m_channelEngine;
 
   bool m_isEditing = false;
   QPoint m_originEditingPoint;
@@ -177,12 +177,12 @@ public:
 
   void recieveValuePlusFromMouse(const bool t_isPlus);
 
-  void setChannelDataEngine(ChannelDataEngine *t_channelDataEngine)
-  { m_channelDataEngine = t_channelDataEngine; }
+  void setChannelEngine(ChannelEngine *t_channelEngine)
+  { m_channelEngine = t_channelEngine; }
 
 private :
 
-  ChannelDataEngine *m_channelDataEngine;
+  ChannelEngine *m_channelEngine;
 };
 
 #endif // VALUETABLEWIDGET_H
