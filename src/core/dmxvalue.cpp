@@ -231,9 +231,13 @@ void DmxChannel::update()
     if (m_isDirectChannel) return;// on s'en fout de scene level
     if (m_sceneLevel >= m_level)
     {
-      m_level = m_sceneLevel;
+      // m_level = m_sceneLevel;
+      setLevel(m_sceneLevel);
       if (m_level)
+      {
+
         setChannelDataFlag(ChannelDataFlag::SelectedSceneFlag);
+      }
     }
   }
   else

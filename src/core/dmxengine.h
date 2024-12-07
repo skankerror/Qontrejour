@@ -111,7 +111,6 @@ private :
 };
 
 /******************************* CueEngine ****************************/
-// class ChannelEngine;
 
 class CueEngine :
     public QObject

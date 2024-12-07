@@ -66,7 +66,7 @@ DmxManager::DmxManager(QObject *parent)
 
 
   // TEST
-  testingMethod();
+  // testingMethod();
 }
 
 void DmxManager::testingMethod()

@@ -232,6 +232,13 @@ class DmxChannel
 {
 
   Q_OBJECT
+  Q_PROPERTY(int sceneLevel
+                 READ getSceneLevel
+                     WRITE setSceneLevel
+/*                         RESET resetLevel
+                             NOTIFY levelChanged
+                                 FINAL*/)
+
 
 public :
 
@@ -239,7 +246,7 @@ public :
              dmx t_channelGroupLevel = NULL_DMX,
              dmx t_directChannelLevel = NULL_DMX,
              overdmx t_directChannelOffset = NULL_DMX_OFFSET,
-             dmx t_sceneLevel = NULL_DMX,
+             int t_sceneLevel = NULL_DMX,
              dmx t_nextSceneLevel = NULL_DMX,
              RootValue *t_parent = nullptr)
       : LeveledValue(t_type,
@@ -265,7 +272,7 @@ public :
   dmx getChannelGroupLevel() const{ return m_channelGroupLevel; }
   dmx getDirectChannelLevel() const{ return m_directChannelLevel; }
   overdmx getDirectChannelOffset() const{ return m_directChannelOffset; }
-  dmx getSceneLevel() const{ return m_sceneLevel; }
+  int getSceneLevel() const{ return m_sceneLevel; }
   dmx getNextSceneLevel() const{ return m_nextSceneLevel; }
   bool getIsSelected() const{ return m_isSelected; }
   bool getIsDirectChannel() const{ return m_isDirectChannel; }
@@ -281,7 +288,10 @@ public :
   { m_directChannelLevel = t_directChannelLevel; }
   void setDirectChannelOffset(overdmx t_directChannelOffset)
   { m_directChannelOffset = t_directChannelOffset; }
-  void setSceneLevel(dmx t_sceneLevel){ m_sceneLevel = t_sceneLevel; update(); }
+  void setSceneLevel(int t_sceneLevel)
+  { m_sceneLevel = t_sceneLevel;
+    update();
+  }
   void setNextSceneLevel(dmx t_nextSceneLevel)
   { m_nextSceneLevel = t_nextSceneLevel; }
   void setIsSelected(bool t_isSelected)
@@ -328,17 +338,10 @@ private :
   dmx m_channelGroupLevel = NULL_DMX;
   dmx m_directChannelLevel = NULL_DMX;
   overdmx m_directChannelOffset = NULL_DMX_OFFSET;
-  dmx m_sceneLevel = NULL_DMX;
+  int m_sceneLevel = NULL_DMX;
   dmx m_nextSceneLevel = NULL_DMX;
   bool m_isSelected = false;
   bool m_isDirectChannel = false;
-
-  Q_PROPERTY(dmx sceneLevel
-                 READ getSceneLevel
-                     WRITE setSceneLevel
-/*                         RESET resetLevel
-                             NOTIFY levelChanged
-                                 FINAL*/)
 
 };
 Q_DECLARE_METATYPE(DmxChannel)

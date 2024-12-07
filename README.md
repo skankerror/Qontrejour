@@ -31,4 +31,4 @@ More info
 
 Licence
 ---------
-[GNU GPL v3](https://github.com/skankerror/QontreJour/LICENSE)
+[GNU GPL v3](https://github.com/skankerror/Qontrejour/LICENSE)
