@@ -129,10 +129,6 @@ signals :
 
 public slots :
 
-  void submasterSliderToEngine(id t_id,
-                         dmx t_level);
-  void directChannelSlidersToEngine(id t_id,
-                                    dmx t_level);
   void keypadToInterpreter(KeypadButton t_buttonType);
   void playBackToEngine(PlayBackButton t_buttonType);
 

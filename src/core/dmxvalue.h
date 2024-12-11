@@ -155,15 +155,6 @@ public slots :
   void setAssignedWidget(QWidget *t_assignedWidget)
   { m_assignedWidget = t_assignedWidget; }
 
-// protected:
-
-//   Q_PROPERTY(dmx level
-//                  READ getLevel
-//                      WRITE setLevel
-//                          RESET resetLevel
-//                              NOTIFY levelChanged
-//                                  FINAL)
-
 protected :
 
   dmx m_level = 0;
@@ -234,11 +225,7 @@ class DmxChannel
   Q_OBJECT
   Q_PROPERTY(int sceneLevel
                  READ getSceneLevel
-                     WRITE setSceneLevel
-/*                         RESET resetLevel
-                             NOTIFY levelChanged
-                                 FINAL*/)
-
+                     WRITE setSceneLevel)
 
 public :
 

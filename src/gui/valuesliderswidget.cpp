@@ -158,8 +158,8 @@ void DirectChannelWidget::populateWidget()
 
     connect(directChannelSlider,
             SIGNAL(valueSliderMoved(id,dmx)),
-            MANAGER,
-            SLOT(directChannelSlidersToEngine(id,dmx)));
+            MANAGER->getDmxEngine()->getChannelEngine(),
+            SLOT(onChannelLevelChangedFromSliderChannel(id,dmx)));
 
     m_L_sliders.append(directChannelSlider);
   }
@@ -258,8 +258,8 @@ void SubmasterWidget::populateWidget()
 
       connect(submasterSlider,
               SIGNAL(valueSliderMoved(id,dmx)),
-              MANAGER,
-              SLOT(submasterSliderToEngine(id,dmx)));
+              MANAGER->getDmxEngine()->getGroupEngine(),
+              SLOT(groupLevelChanged(id,dmx)));
 
 
       auto nameLabel = new QLabel("", this);

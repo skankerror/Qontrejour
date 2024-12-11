@@ -225,7 +225,8 @@ void DmxChannel::update()
   setChannelDataFlag(ChannelDataFlag::UnknownFlag);
   if (m_channelGroupLevel >= m_directChannelLevel)
   {
-    m_level = m_channelGroupLevel;
+    // m_level = m_channelGroupLevel;
+    setLevel(m_channelGroupLevel);
     if (m_level)
       setChannelDataFlag(ChannelDataFlag::ChannelGroupFlag);
     if (m_isDirectChannel) return;// on s'en fout de scene level
@@ -247,7 +248,7 @@ void DmxChannel::update()
     if (m_isDirectChannel) return;// on s'en fout de scene level
     if (m_sceneLevel >= m_level)
     {
-      m_level = m_sceneLevel;
+      setLevel(m_sceneLevel);
       setChannelDataFlag(ChannelDataFlag::SelectedSceneFlag);
     }
   }

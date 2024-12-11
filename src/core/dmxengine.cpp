@@ -197,45 +197,56 @@ void GoEngine::letsGo(id t_fromSceneStep,
                       id t_toSceneStep,
                       id t_seqid)
 {
-  // DmxScene *fromScene = m_L_seq.at(t_seqid)->getScene(t_fromSceneStep);
-  // DmxScene *toScene = m_L_seq.at(t_seqid)->getScene(t_toSceneStep);
-  // QList<id> L_fromChannelId = fromScene->getL_channelId();
-  // QList<id> L_toChannelId = toScene->getL_channelId();
+  DmxScene *fromScene = m_L_seq.at(t_seqid)->getScene(t_fromSceneStep);
+  DmxScene *toScene = m_L_seq.at(t_seqid)->getScene(t_toSceneStep);
+  QList<id> L_fromChannelId = fromScene->getL_channelId();
+  QList<id> L_toChannelId = toScene->getL_channelId();
+  // TODO vérifier la taille de la liste
   // QList<id> L_directChannelId = m_channelEngine->getL_directChannelId();
 
-  // for (qsizetype i = 0;
-  //      i < L_fromChannelId.size();
-  //      i++)
-  // {
-  //   id channelId = L_fromChannelId.at(i);
-  //   // ChannelData *channelData = m_channelEngine->getChannel(channelId);
-  //   DmxChannel *channel = m_channelEngine->getChannel(channelId);
-  //   dmx startingDmx = channel->getSceneLevel();
-  //   auto index = L_directChannelId.indexOf(channelId);
-  //   if (index != -1) // that's direct channel
-  //   {
-  //     startingDmx = channel->getDirectChannelLevel();
-  //     L_directChannelId.remove(index);
-  //   }
-  //   dmx endingDmx = NULL_DMX;
-  //   index = L_toChannelId.indexOf(channelId);
-  //   if (index != -1)
-  //   {
-  //     endingDmx = toScene->getControledChannelStoredLevel(L_toChannelId.at(index));
-  //     L_toChannelId.remove(index);
-  //   }
-  //   // create animation for channel data
-  //   auto anim = new QPropertyAnimation(channel,
-  //                                      "sceneLevel",
-  //                                      this);
-  //   anim->setStartValue(startingDmx);
-  //   anim->setEndValue(endingDmx);
-  //   if (endingDmx == 0)
-  //     anim->setCurrentTime(toScene->getTimeOut());
-  //   else
-  //     anim->setCurrentTime(toScene->getTimeIn());
-  //   addAnimation(anim);
-  // }
+  for (qsizetype i = 0;
+       i < L_fromChannelId.size();
+       i++)
+  {
+    id channelId = L_fromChannelId.at(i);
+    auto channel = MANAGER->getChannel(channelId);
+    dmx startingDmx = channel->getSceneLevel();
+    if (channel->getChannelDataFlag() == DirectChannelFlag)
+    {
+      startingDmx = channel->getDirectChannelLevel();
+      channel->setDirectChannelOffset(0);
+      channel->setChannelDataFlag(SelectedSceneFlag);
+    }
+    // if (m_channelEngine->getL_directChannelSize())
+    // {
+    //   QList<id> L_directChannelId = m_channelEngine->getL_directChannelId();
+    //   auto index = L_directChannelId.indexOf(channelId);
+
+    //   if (index != -1) // that's direct channel
+    //   {
+    //     startingDmx = channel->getDirectChannelLevel();
+    //     L_directChannelId.remove(index);
+    //   }
+    // }
+
+    dmx endingDmx = NULL_DMX;
+    auto index = L_toChannelId.indexOf(channelId);
+    if (index != -1)
+    {
+      endingDmx = toScene->getControledChannelStoredLevel(L_toChannelId.at(index));
+      L_toChannelId.remove(index);
+    }
+    auto anim = new QPropertyAnimation(channel,
+                                       "sceneLevel",
+                                       this);
+    anim->setStartValue(startingDmx);
+    anim->setEndValue(endingDmx);
+    if (endingDmx == 0)
+      anim->setDuration(toScene->getTimeOut());
+    else
+      anim->setDuration(toScene->getTimeIn());
+    addAnimation(anim);
+  }
 
   // for (qsizetype i = 0;
   //      i < L_directChannelId.size();
@@ -258,44 +269,36 @@ void GoEngine::letsGo(id t_fromSceneStep,
   //   anim->setStartValue(startingDmx);
   //   anim->setEndValue(endingDmx);
   //   if (endingDmx == 0)
-  //     anim->setCurrentTime(toScene->getTimeOut());
+  //     anim->setDuration(toScene->getTimeOut());
   //   else
-  //     anim->setCurrentTime(toScene->getTimeIn());
+  //     anim->setDuration(toScene->getTimeIn());
   //   addAnimation(anim);
   // }
 
-  // for (qsizetype i = 0;
-  //      i < L_toChannelId.size();
-  //      i++)
-  // {
-  //   id channelId = L_toChannelId.at(i);
-  //   DmxChannel *channel = m_channelEngine->getChannel(channelId);
-  //   dmx startingDmx = NULL_DMX;
-  //   dmx endingDmx = toScene->getControledChannelStoredLevel(channelId);
-  //   // create animation for channel data
-  //   auto anim = new QPropertyAnimation(channel,
-  //                                      "sceneLevel",
-  //                                      this);
-  //   anim->setStartValue(startingDmx);
-  //   anim->setEndValue(endingDmx);
-  //   anim->setCurrentTime(toScene->getTimeIn());
-  //   addAnimation(anim);
-  // }
-  // start();
-
-  // test
-
-  // auto channel = m_channelEngine->getChannel(0);
-  auto channel = MANAGER->getChannel(0);
-  auto propAnim = new QPropertyAnimation(channel,
-                                         "sceneLevel",
-                                         this);
-  propAnim->setStartValue(0);
-  propAnim->setEndValue(255);
-  propAnim->setDuration(10000);
-  propAnim->start();
-  // addAnimation(propAnim);
-  // start();
+  for (qsizetype i = 0;
+       i < L_toChannelId.size();
+       i++)
+  {
+    id channelId = L_toChannelId.at(i);
+    auto channel = m_channelEngine->getChannel(channelId);
+    dmx startingDmx = NULL_DMX;
+    if (channel->getChannelDataFlag() == DirectChannelFlag)
+    {
+      startingDmx = channel->getDirectChannelLevel();
+      channel->setDirectChannelOffset(0);
+      channel->setChannelDataFlag(SelectedSceneFlag);
+    }
+    dmx endingDmx = toScene->getControledChannelStoredLevel(channelId);
+    // create animation for channel data
+    auto anim = new QPropertyAnimation(channel,
+                                       "sceneLevel",
+                                       this);
+    anim->setStartValue(startingDmx);
+    anim->setEndValue(endingDmx);
+    anim->setDuration(toScene->getTimeIn());
+    addAnimation(anim);
+  }
+  start();
 }
 
 void GoEngine::letsPause()
@@ -695,7 +698,7 @@ ChannelEngine::ChannelEngine(RootValue *t_rootChannel,
     m_rootChannel(t_rootChannel)/*,
     m_channelDataEngine(t_channelDataEngine)*/
 {
-  qDebug() << "bluk";
+  // m_L_directChannelId = QList<id>();
 }
 
 ChannelEngine::~ChannelEngine()
@@ -710,58 +713,58 @@ DmxChannel *ChannelEngine::getChannel(const id &t_id) const
     return GET_CHANNEL(t_id);
 }
 
-QList<DmxChannel *> ChannelEngine::getL_directChannel()
-{
-  QList<DmxChannel *> L_directChannel;
-  for (qsizetype i = 0;
-       i < m_L_directChannelId.size();
-       i++)
-  {
-    auto directChannel = getChannel(m_L_directChannelId.at(i));
-    L_directChannel.append(directChannel);
-  }
-  return L_directChannel;
-}
+// QList<DmxChannel *> ChannelEngine::getL_directChannel()
+// {
+//   QList<DmxChannel *> L_directChannel;
+//   for (qsizetype i = 0;
+//        i < m_L_directChannelId.size();
+//        i++)
+//   {
+//     auto directChannel = getChannel(m_L_directChannelId.at(i));
+//     L_directChannel.append(directChannel);
+//   }
+//   return L_directChannel;
+// }
 
-void ChannelEngine::addL_idToL_direct(const QList<id> &t_L_id)
-{
-  for (qsizetype i = 0;
-       i < t_L_id.size();
-       i++)
-  {
-    addIdToL_direct(t_L_id.at(i));
-  }
-}
+// void ChannelEngine::addL_idToL_direct(const QList<id> &t_L_id)
+// {
+//   for (qsizetype i = 0;
+//        i < t_L_id.size();
+//        i++)
+//   {
+//     addIdToL_direct(t_L_id.at(i));
+//   }
+// }
 
-void ChannelEngine::addIdToL_direct(const id &t_id)
-{
-  auto index = m_L_directChannelId.indexOf(t_id);
-  if (index = -1)
-  {
-    m_L_directChannelId.append(t_id);
-    getChannel(t_id)->setIsDirectChannel(true);
-  }
-}
+// void ChannelEngine::addIdToL_direct(const id &t_id)
+// {
+//   auto index = m_L_directChannelId.indexOf(t_id);
+//   if (index = -1)
+//   {
+//     m_L_directChannelId.append(t_id);
+//     getChannel(t_id)->setIsDirectChannel(true);
+//   }
+// }
 
-void ChannelEngine::removeL_idFromL_direct(const QList<id> &t_L_id)
-{
-  for (qsizetype i = 0;
-       i < t_L_id.size();
-       i++)
-  {
-    removeIdFromL_direct(t_L_id.at(i));
-  }
-}
+// void ChannelEngine::removeL_idFromL_direct(const QList<id> &t_L_id)
+// {
+//   for (qsizetype i = 0;
+//        i < t_L_id.size();
+//        i++)
+//   {
+//     removeIdFromL_direct(t_L_id.at(i));
+//   }
+// }
 
-void ChannelEngine::removeIdFromL_direct(const id &t_id)
-{
-  auto index = m_L_directChannelId.indexOf(t_id);
-  if (index != -1)
-  {
-    m_L_directChannelId.remove(index);
-    getChannel(t_id)->setIsDirectChannel(false);
-  }
-}
+// void ChannelEngine::removeIdFromL_direct(const id &t_id)
+// {
+//   auto index = m_L_directChannelId.indexOf(t_id);
+//   if (index != -1)
+//   {
+//     m_L_directChannelId.remove(index);
+//     getChannel(t_id)->setIsDirectChannel(false);
+//   }
+// }
 
 QList<DmxChannel *> ChannelEngine::getL_selectedChannel()
 {
@@ -814,7 +817,7 @@ void ChannelEngine::removeIdFromL_select(const id &t_id)
   auto index = m_L_selectedChannelId.indexOf(t_id);
   if (index != -1)
   {
-    m_L_directChannelId.remove(index);
+    m_L_selectedChannelId.remove(index);
     GET_CHANNEL(t_id)->setIsSelected(false);
   }
   emit sigToUpdateChannelView();
@@ -858,18 +861,18 @@ void ChannelEngine::clearSelection()
   emit sigToUpdateChannelView();
 }
 
-void ChannelEngine::clearDirectChannel()
-{
-  for (qsizetype i = 0;
-       i < m_L_directChannelId.size();
-       i++)
-  {
-    auto channel = getChannel(m_L_directChannelId.at(i));
-    channel->clearDirectChannel();
-  }
-  m_L_directChannelId.clear();
-  m_L_directChannelId.squeeze();
-}
+// void ChannelEngine::clearDirectChannel()
+// {
+//   for (qsizetype i = 0;
+//        i < m_L_directChannelId.size();
+//        i++)
+//   {
+//     auto channel = getChannel(m_L_directChannelId.at(i));
+//     channel->clearDirectChannel();
+//   }
+//   m_L_directChannelId.clear();
+//   m_L_directChannelId.squeeze();
+// }
 
 // void ChannelEngine::clearChannelDataSelection()
 // {
@@ -878,14 +881,6 @@ void ChannelEngine::clearDirectChannel()
 // }
 
 
-void ChannelEngine::update(id t_id)
-{
-  // auto channelData = m_channelDataEngine->getChannelData(t_id);
-  auto channel = GET_CHANNEL(t_id);
-  channel->update();
-  channel->setLevel(channel->getLevel());
-  channel->setChannelDataFlag(channel->getChannelDataFlag());
-}
 
 void ChannelEngine::onChannelLevelChangedFromGroup(id t_id,
                                                    dmx t_level)
@@ -893,17 +888,25 @@ void ChannelEngine::onChannelLevelChangedFromGroup(id t_id,
   // auto channelData = m_channelDataEngine->getChannelData(t_id);
   auto channel = getChannel(t_id);
   channel->setChannelGroupLevel(t_level);
-  update(t_id);
+  // update(t_id);
+  channel->update();
+  emit sigToUpdateChannelView();
+
 }
 
 void ChannelEngine::onChannelLevelChangedFromSliderChannel(id t_id,
                                                            dmx t_level)
 {
-  addIdToL_direct(t_id);
+  // addIdToL_direct(t_id);
   auto channel = getChannel(t_id);
+  // TODO : voir ça
   channel->clearOverdmx();
   channel->setDirectChannelLevel(t_level);
-  update(t_id);
+  channel->setChannelDataFlag(DirectChannelFlag);
+  // update(t_id);
+  channel->update();
+  emit sigToUpdateChannelView();
+
 }
 
 void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
@@ -916,7 +919,7 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
   {
     id channelid = L_selectId.at(i);
     auto channel = getChannel(channelid);
-    addIdToL_direct(channelid);
+    // addIdToL_direct(channelid);
     auto level = channel->getDirectChannelLevel();
     auto offset = channel->getDirectChannelOffset();
 
@@ -928,7 +931,6 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
         {
           offset += t_increment;
           channel->setDirectChannelOffset(offset);
-          update(channelid);
         }
         else // -dmx
         {
@@ -937,13 +939,11 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
           {
             channel->setDirectChannelOffset(NULL_DMX_OFFSET);
             channel->setDirectChannelLevel(MAX_DMX - result);
-            update(channelid);
           }
           else // y a encore de l'offset
           {
             offset -= t_increment;
             channel->setDirectChannelOffset(offset);
-            update(channelid);
           }
         }
       }
@@ -953,7 +953,6 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
         {
           offset -= t_increment;
           channel->setDirectChannelOffset(offset);
-          update(channelid);
         }
         else // +dmx
         {
@@ -962,13 +961,11 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
           {
             channel->setDirectChannelOffset(NULL_DMX_OFFSET);
             channel->setDirectChannelLevel(NULL_DMX + result);
-            update(channelid);
           }
           else // y a encore de l'offset
           {
             offset -= t_increment;
             channel->setDirectChannelOffset(offset);
-            update(channelid);
           }
         }
       }
@@ -983,10 +980,12 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
         {
           channel->setDirectChannelLevel(MAX_DMX);
           channel->setDirectChannelOffset(offset);
-          update(channelid);
         }
-        channel->setDirectChannelLevel(result);
-        update(channelid);
+        else
+        {
+          channel->setDirectChannelLevel(result);
+        }
+        channel->update();
       }
       else // -dmx
       {
@@ -995,16 +994,17 @@ void ChannelEngine::onChannelLevelPlusFromDirectChannel(const bool t_isPlus,
         {
           channel->setDirectChannelLevel(NULL_DMX);
           channel->setDirectChannelOffset(result);
-          update(channelid);
         }
         else
         {
           channel->setDirectChannelLevel(result);
-          update(channelid);
+          channel->setChannelDataFlag(DirectChannelFlag);
         }
       }
     }
+    channel->update();
   }
+  emit sigToUpdateChannelView();
 }
 
 void ChannelEngine::onSelectedChannelListAtLevel(dmx t_level)
@@ -1018,8 +1018,10 @@ void ChannelEngine::onSelectedChannelListAtLevel(dmx t_level)
     channel->clearOverdmx();
     channel->setIsDirectChannel(true);
     channel->setDirectChannelLevel(t_level);
-    update(channel->getid());
+    // update(channel->getid());
+    channel->update();
   }
+  emit sigToUpdateChannelView();
 }
 
 void ChannelEngine::onChannelLevelChangedFromScene(id t_channelid,
@@ -1029,9 +1031,11 @@ void ChannelEngine::onChannelLevelChangedFromScene(id t_channelid,
   Q_UNUSED(t_role) // NOTE : pour plus tard
   auto channel = getChannel(t_channelid);
   channel->clearDirectChannel();
-  removeIdFromL_direct(t_channelid);
+  // removeIdFromL_direct(t_channelid);
   channel->setSceneLevel(t_level);
-  update(t_channelid);
+  // update(t_channelid);
+  channel->update();
+  emit sigToUpdateChannelView();
 }
 
 /******************************** OutputEngine *************************/

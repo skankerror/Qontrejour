@@ -66,7 +66,7 @@ DmxManager::DmxManager(QObject *parent)
 
 
   // TEST
-  // testingMethod();
+  testingMethod();
 }
 
 void DmxManager::testingMethod()
@@ -622,22 +622,6 @@ QList<QDmxDevice *> DmxManager::getAvailableDevices(const QString &t_driverStrin
   auto driver = m_hwManager->driver(t_driverString);
   driver->setEnabled(true);
   return driver->availableDevices();
-}
-
-void DmxManager::submasterSliderToEngine(id t_id,
-                                         dmx t_level)
-{
-  m_dmxEngine->getGroupEngine()->groupLevelChanged(t_id,
-                                                   t_level);
-}
-
-void DmxManager::directChannelSlidersToEngine(id t_id,
-                                              dmx t_level)
-{
-  m_dmxEngine
-      ->getChannelEngine()
-      ->onChannelLevelChangedFromSliderChannel(t_id,
-                                               t_level);
 }
 
 void DmxManager::keypadToInterpreter(KeypadButton t_buttonType)

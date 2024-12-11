@@ -241,6 +241,7 @@ private :
 
 };
 
+// class for channel, output, channelgroup.
 class IdedValue
 {
 
@@ -258,6 +259,7 @@ protected :
   id m_id = NO_ID;
 };
 
+// class for rootoutput, outpu
 class UniversedValue
 {
 
@@ -277,6 +279,7 @@ protected :
 
 /****************************** Ch_Id_Dmx ********************************/
 
+// class to store channel with its value
 class Ch_Id_Dmx
 {
 

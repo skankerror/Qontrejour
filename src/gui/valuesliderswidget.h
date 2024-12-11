@@ -98,9 +98,9 @@ public :
 
   bool getIsSLiderConnected(int t_sliderID);
 
-signals :
+// signals :
 
-  void aSliderMoved();
+//   void aSliderMoved();
 
 public slots:
 

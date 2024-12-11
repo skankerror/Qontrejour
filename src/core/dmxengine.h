@@ -226,8 +226,10 @@ public :
   void setRootChannel(RootValue *t_rootChannel)
   { m_rootChannel = t_rootChannel; }
 
-  QList<id> getL_directChannelId() const
-  { return m_L_directChannelId; }
+  // qsizetype getL_directChannelSize() const
+  // { return m_L_directChannelId.size(); }
+  // QList<id> getL_directChannelId() const
+  // { return m_L_directChannelId; }
 
   QList<id> getL_selectedChannelId() const
   { return m_L_selectedChannelId; }
@@ -235,11 +237,11 @@ public :
 
 // private :
 
-  QList<DmxChannel *> getL_directChannel();
-  void addL_idToL_direct(const QList<id> &t_L_id);
-  void addIdToL_direct(const id &t_id);
-  void removeL_idFromL_direct(const QList<id> &t_L_id);
-  void removeIdFromL_direct(const id &t_id);
+  // QList<DmxChannel *> getL_directChannel();
+  // void addL_idToL_direct(const QList<id> &t_L_id);
+  // void addIdToL_direct(const id &t_id);
+  // void removeL_idFromL_direct(const QList<id> &t_L_id);
+  // void removeIdFromL_direct(const id &t_id);
 
   QList<DmxChannel *> getL_selectedChannel();
   void addL_idToL_select(const QList<id> &t_L_id);
@@ -248,9 +250,9 @@ public :
   void removeIdFromL_select(const id &t_id);
 
   void selectNonNullChannels();
-  void clearDirectChannel();
+  // void clearDirectChannel();
 
-  void update(id t_id);
+  // void update(id t_id);
 
 signals :
 
@@ -276,7 +278,7 @@ private :
 
   RootValue *m_rootChannel;
 
-  QList<id> m_L_directChannelId;
+  // QList<id> m_L_directChannelId;
   QList<id> m_L_selectedChannelId;
 
 };
