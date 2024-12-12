@@ -215,17 +215,6 @@ void GoEngine::letsGo(id t_fromSceneStep,
       channel->setDirectChannelOffset(0);
       channel->setChannelDataFlag(SelectedSceneFlag);
     }
-    // if (m_channelEngine->getL_directChannelSize())
-    // {
-    //   QList<id> L_directChannelId = m_channelEngine->getL_directChannelId();
-    //   auto index = L_directChannelId.indexOf(channelId);
-
-    //   if (index != -1) // that's direct channel
-    //   {
-    //     startingDmx = channel->getDirectChannelLevel();
-    //     L_directChannelId.remove(index);
-    //   }
-    // }
 
     dmx endingDmx = NULL_DMX;
     auto index = L_toChannelId.indexOf(channelId);
@@ -240,45 +229,18 @@ void GoEngine::letsGo(id t_fromSceneStep,
     anim->setStartValue(startingDmx);
     anim->setEndValue(endingDmx);
     if (endingDmx == NULL_DMX)
-      anim->setDuration(toScene->getTimeOut());
+      anim->setDuration(toScene->getTimeOut() * MS_TO_S);
     else
-      anim->setDuration(toScene->getTimeIn());
+      anim->setDuration(toScene->getTimeIn() * MS_TO_S);
     addAnimation(anim);
   }
-
-  // for (qsizetype i = 0;
-  //      i < L_directChannelId.size();
-  //      i++)
-  // {
-  //   id channelId = L_directChannelId.at(i);
-  //   DmxChannel *channel = m_channelEngine->getChannel(channelId);
-  //   dmx startingDmx = m_channelEngine->getChannel(channelId)->getDirectChannelLevel();
-  //   dmx endingDmx = NULL_DMX;
-  //   auto index = L_toChannelId.indexOf(channelId);
-  //   if (index != -1)
-  //   {
-  //     endingDmx = toScene->getControledChannelStoredLevel(L_toChannelId.at(index));
-  //     L_toChannelId.remove(index);
-  //   }
-  //   // create animation for channel data
-  //   auto anim = new QPropertyAnimation(channel,
-  //                                      "sceneLevel",
-  //                                      this);
-  //   anim->setStartValue(startingDmx);
-  //   anim->setEndValue(endingDmx);
-  //   if (endingDmx == 0)
-  //     anim->setDuration(toScene->getTimeOut());
-  //   else
-  //     anim->setDuration(toScene->getTimeIn());
-  //   addAnimation(anim);
-  // }
 
   for (qsizetype i = 0;
        i < L_toChannelId.size();
        i++)
   {
     id channelId = L_toChannelId.at(i);
-    auto channel = m_channelEngine->getChannel(channelId);
+    auto channel = MANAGER->getChannel(channelId);
     dmx startingDmx = NULL_DMX;
     if (channel->getChannelDataFlag() == DirectChannelFlag)
     {
@@ -292,9 +254,13 @@ void GoEngine::letsGo(id t_fromSceneStep,
                                        this);
     anim->setStartValue(startingDmx);
     anim->setEndValue(endingDmx);
-    anim->setDuration(toScene->getTimeIn());
+    anim->setDuration(toScene->getTimeIn() * MS_TO_S);
     addAnimation(anim);
   }
+  connect(this,
+          &QParallelAnimationGroup::finished,
+          this,
+          [=](){m_L_seq.at(t_seqid)->setSelectedStepId(t_toSceneStep); });
   start();
 }
 

@@ -102,6 +102,8 @@ typedef quint8 percent;
 #define DMX_INCREMENT_MIN 1
 #define DMX_INCREMENT_DEFAULT 13
 
+#define MS_TO_S 1000
+
 enum KeypadButton
 {
   Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Dot,
