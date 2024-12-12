@@ -201,8 +201,6 @@ void GoEngine::letsGo(id t_fromSceneStep,
   DmxScene *toScene = m_L_seq.at(t_seqid)->getScene(t_toSceneStep);
   QList<id> L_fromChannelId = fromScene->getL_channelId();
   QList<id> L_toChannelId = toScene->getL_channelId();
-  // TODO vérifier la taille de la liste
-  // QList<id> L_directChannelId = m_channelEngine->getL_directChannelId();
 
   for (qsizetype i = 0;
        i < L_fromChannelId.size();
@@ -231,17 +229,17 @@ void GoEngine::letsGo(id t_fromSceneStep,
 
     dmx endingDmx = NULL_DMX;
     auto index = L_toChannelId.indexOf(channelId);
-    if (index != -1)
+    if (index != -1) // le channel est dans la next scene
     {
       endingDmx = toScene->getControledChannelStoredLevel(L_toChannelId.at(index));
-      L_toChannelId.remove(index);
+      L_toChannelId.remove(index); // on l'enlève
     }
     auto anim = new QPropertyAnimation(channel,
                                        "sceneLevel",
                                        this);
     anim->setStartValue(startingDmx);
     anim->setEndValue(endingDmx);
-    if (endingDmx == 0)
+    if (endingDmx == NULL_DMX)
       anim->setDuration(toScene->getTimeOut());
     else
       anim->setDuration(toScene->getTimeIn());
@@ -289,7 +287,6 @@ void GoEngine::letsGo(id t_fromSceneStep,
       channel->setChannelDataFlag(SelectedSceneFlag);
     }
     dmx endingDmx = toScene->getControledChannelStoredLevel(channelId);
-    // create animation for channel data
     auto anim = new QPropertyAnimation(channel,
                                        "sceneLevel",
                                        this);
@@ -695,8 +692,7 @@ void CueEngine::onSeqChanged(id t_seqId)
 ChannelEngine::ChannelEngine(RootValue *t_rootChannel,
                              QObject *parent)
   : QObject(parent),
-    m_rootChannel(t_rootChannel)/*,
-    m_channelDataEngine(t_channelDataEngine)*/
+    m_rootChannel(t_rootChannel)
 {
   // m_L_directChannelId = QList<id>();
 }
@@ -836,9 +832,11 @@ void ChannelEngine::selectNonNullChannels()
     dmx level = channel->getLevel();
     ChannelDataFlag flag = channel->getChannelDataFlag();
     if (level > 0
-        && (flag == ChannelDataFlag::SelectedSceneFlag
-            || flag == ChannelDataFlag::DirectChannelFlag
-            || flag == ChannelDataFlag::ChannelGroupFlag))
+        && flag != ChannelDataFlag::ParkedFlag
+        && flag != ChannelDataFlag::IndependantFlag)
+        // && (flag == ChannelDataFlag::SelectedSceneFlag
+        //     || flag == ChannelDataFlag::DirectChannelFlag
+        //     || flag == ChannelDataFlag::ChannelGroupFlag))
     {
       id channelId = channel->getid();
       addIdToL_select(channelId);
@@ -903,6 +901,7 @@ void ChannelEngine::onChannelLevelChangedFromSliderChannel(id t_id,
   channel->clearOverdmx();
   channel->setDirectChannelLevel(t_level);
   channel->setChannelDataFlag(DirectChannelFlag);
+  channel->setIsDirectChannel(true);
   // update(t_id);
   channel->update();
   emit sigToUpdateChannelView();
