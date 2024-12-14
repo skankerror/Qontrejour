@@ -181,107 +181,15 @@ void ChannelGroupEngine::groupLevelChanged(const id t_groupID,
   }
 }
 
-/******************************* GoEngine *****************************/
-
-GoEngine::GoEngine(RootValue *t_rootValue,
-                   ChannelEngine *t_channelEngine,
-                   QList<Sequence *> t_L_seq,
-                   QObject *parent)
-    : m_rootValue(t_rootValue),
-    m_channelEngine(t_channelEngine),
-    m_L_seq(t_L_seq),
-    QParallelAnimationGroup(parent)
-{}
-
-void GoEngine::letsGo(id t_fromSceneStep,
-                      id t_toSceneStep,
-                      id t_seqid)
-{
-  DmxScene *fromScene = m_L_seq.at(t_seqid)->getScene(t_fromSceneStep);
-  DmxScene *toScene = m_L_seq.at(t_seqid)->getScene(t_toSceneStep);
-  QList<id> L_fromChannelId = fromScene->getL_channelId();
-  QList<id> L_toChannelId = toScene->getL_channelId();
-
-  for (qsizetype i = 0;
-       i < L_fromChannelId.size();
-       i++)
-  {
-    id channelId = L_fromChannelId.at(i);
-    auto channel = MANAGER->getChannel(channelId);
-    dmx startingDmx = channel->getSceneLevel();
-    if (channel->getChannelDataFlag() == DirectChannelFlag)
-    {
-      startingDmx = channel->getDirectChannelLevel();
-      channel->setDirectChannelOffset(0);
-      channel->setChannelDataFlag(SelectedSceneFlag);
-    }
-
-    dmx endingDmx = NULL_DMX;
-    auto index = L_toChannelId.indexOf(channelId);
-    if (index != -1) // le channel est dans la next scene
-    {
-      endingDmx = toScene->getControledChannelStoredLevel(L_toChannelId.at(index));
-      L_toChannelId.remove(index); // on l'enlève
-    }
-    auto anim = new QPropertyAnimation(channel,
-                                       "sceneLevel",
-                                       this);
-    anim->setStartValue(startingDmx);
-    anim->setEndValue(endingDmx);
-    if (endingDmx == NULL_DMX)
-      anim->setDuration(toScene->getTimeOut() * MS_TO_S);
-    else
-      anim->setDuration(toScene->getTimeIn() * MS_TO_S);
-    addAnimation(anim);
-  }
-
-  for (qsizetype i = 0;
-       i < L_toChannelId.size();
-       i++)
-  {
-    id channelId = L_toChannelId.at(i);
-    auto channel = MANAGER->getChannel(channelId);
-    dmx startingDmx = NULL_DMX;
-    if (channel->getChannelDataFlag() == DirectChannelFlag)
-    {
-      startingDmx = channel->getDirectChannelLevel();
-      channel->setDirectChannelOffset(0);
-      channel->setChannelDataFlag(SelectedSceneFlag);
-    }
-    dmx endingDmx = toScene->getControledChannelStoredLevel(channelId);
-    auto anim = new QPropertyAnimation(channel,
-                                       "sceneLevel",
-                                       this);
-    anim->setStartValue(startingDmx);
-    anim->setEndValue(endingDmx);
-    anim->setDuration(toScene->getTimeIn() * MS_TO_S);
-    addAnimation(anim);
-  }
-  connect(this,
-          &QParallelAnimationGroup::finished,
-          this,
-          [=](){m_L_seq.at(t_seqid)->setSelectedStepId(t_toSceneStep); });
-  start();
-}
-
-void GoEngine::letsPause()
-{
-
-}
-
-void GoEngine::letsGoBack()
-{
-
-}
-
 /******************************* CueEngine ***************************/
 
 CueEngine::CueEngine(RootValue *t_rootValue,
                      ChannelEngine *t_channelEngine,
                      QList<Sequence *> t_L_seq,
                      QObject *parent)
-    : m_L_seq(t_L_seq),
-    QObject(parent)
+  : m_channelEngine(t_channelEngine),
+    m_L_seq(t_L_seq),
+    QParallelAnimationGroup(parent)
 {
   for (const auto &item
        : std::as_const(t_L_seq))
@@ -292,10 +200,6 @@ CueEngine::CueEngine(RootValue *t_rootValue,
             &CueEngine::onSeqChanged);
   }
   setMainSeqId(0);
-  m_goEngine = new GoEngine(t_rootValue,
-                            t_channelEngine,
-                            t_L_seq,
-                            this);
 }
 
 bool CueEngine::setMainSeqId(id t_mainSeqId)
@@ -567,10 +471,75 @@ void CueEngine::updateScene(QList<DmxChannel *> t_L_channel,
 
 void CueEngine::goGo()
 {
-  id selectStep = getSelectedCueStep();
-  m_goEngine->letsGo(selectStep,
-                     selectStep + 1,
-                     m_mainSeqId);
+  id fromSceneStep = getSelectedCueStep();
+  id toSceneStep = fromSceneStep + 1;
+  DmxScene *fromScene = m_L_seq.at(m_mainSeqId)->getScene(fromSceneStep);
+  DmxScene *toScene = m_L_seq.at(m_mainSeqId)->getScene(toSceneStep);
+  QList<id> L_fromChannelId = fromScene->getL_channelId();
+  QList<id> L_toChannelId = toScene->getL_channelId();
+
+  for (qsizetype i = 0;
+       i < L_fromChannelId.size();
+       i++)
+  {
+    id channelId = L_fromChannelId.at(i);
+    auto channel = MANAGER->getChannel(channelId);
+    dmx startingDmx = channel->getSceneLevel();
+    if (channel->getChannelDataFlag() == DirectChannelFlag)
+    {
+      startingDmx = channel->getDirectChannelLevel();
+      channel->setDirectChannelOffset(0);
+      channel->setChannelDataFlag(SelectedSceneFlag);
+    }
+
+    dmx endingDmx = NULL_DMX;
+    auto index = L_toChannelId.indexOf(channelId);
+    if (index != -1) // le channel est dans la next scene
+    {
+      endingDmx = toScene->getControledChannelStoredLevel(L_toChannelId.at(index));
+      L_toChannelId.remove(index); // on l'enlève
+    }
+    auto anim = new QPropertyAnimation(channel,
+                                       "sceneLevel",
+                                       this);
+    anim->setStartValue(startingDmx);
+    anim->setEndValue(endingDmx);
+    if (endingDmx == NULL_DMX)
+      anim->setDuration(toScene->getTimeOut() * MS_TO_S);
+    else
+      anim->setDuration(toScene->getTimeIn() * MS_TO_S);
+    addAnimation(anim);
+  }
+
+  for (qsizetype i = 0;
+       i < L_toChannelId.size();
+       i++)
+  {
+    id channelId = L_toChannelId.at(i);
+    auto channel = MANAGER->getChannel(channelId);
+    dmx startingDmx = NULL_DMX;
+    if (channel->getChannelDataFlag() == DirectChannelFlag)
+    {
+      startingDmx = channel->getDirectChannelLevel();
+      channel->setDirectChannelOffset(0);
+      channel->setChannelDataFlag(SelectedSceneFlag);
+    }
+    dmx endingDmx = toScene->getControledChannelStoredLevel(channelId);
+    auto anim = new QPropertyAnimation(channel,
+                                       "sceneLevel",
+                                       this);
+    anim->setStartValue(startingDmx);
+    anim->setEndValue(endingDmx);
+    anim->setDuration(toScene->getTimeIn() * MS_TO_S);
+    addAnimation(anim);
+  }
+  connect(this,
+          &QParallelAnimationGroup::finished,
+          this,
+          [=](){m_L_seq.at(m_mainSeqId)->setSelectedStepId(toSceneStep); },
+          Qt::SingleShotConnection);
+  start();
+
 }
 
 void CueEngine::goBack()

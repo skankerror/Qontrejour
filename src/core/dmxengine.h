@@ -77,43 +77,11 @@ private :
   QMap<id, Gr_Id_Dmx> m_M_channelLevel;
 };
 
-/******************************* GoEngine *****************************/
+/******************************* CueEngine ****************************/
 class ChannelEngine;
 
-class GoEngine
+class CueEngine
     : public QParallelAnimationGroup
-{
-
-  Q_OBJECT
-
-public :
-
-  explicit GoEngine(RootValue *t_rootValue,
-                    // ChannelDataEngine *t_channelDataEngine,
-                    ChannelEngine *t_channelEngine,
-                    QList<Sequence *> t_L_seq,
-                    QObject *parent = nullptr);
-
-  void setRootValue(RootValue *t_rootValue){ m_rootValue = t_rootValue; }
-
-  void letsGo(id t_fromSceneStep,
-              id t_toSceneStep,
-              id t_seqid = 0);
-  void letsPause();
-  void letsGoBack();
-
-private :
-
-  RootValue *m_rootValue;
-  ChannelEngine *m_channelEngine;
-  QList<Sequence *> m_L_seq;
-
-};
-
-/******************************* CueEngine ****************************/
-
-class CueEngine :
-    public QObject
 {
 
   Q_OBJECT
@@ -190,9 +158,11 @@ private slots :
 
 private :
 
-  ChannelEngine *m_engine;
+  // RootValue *m_rootValue;
 
-  GoEngine *m_goEngine;
+  ChannelEngine *m_channelEngine;
+
+  // GoEngine *m_goEngine;
 
   QList<Sequence *> m_L_seq;
   id m_mainSeqId = 0;
